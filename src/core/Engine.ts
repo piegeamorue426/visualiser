@@ -1,6 +1,6 @@
 /**
  * Engine - Main orchestrator class that initializes and coordinates
- * all systems: audio, rendering, scenes, camera, presets, and performance.
+ * all systems: audio, rendering, scenes, camera, presets, plugins, and performance.
  */
 
 import { AudioManager } from '@audio/AudioManager';
@@ -15,6 +15,12 @@ import { CameraSystem } from '@camera/CameraSystem';
 import { CameraMode } from '@camera/types';
 import { PresetManager } from '@presets/PresetManager';
 import type { Preset } from '@presets/types';
+import { PluginManager } from '@plugins/PluginManager';
+import type { PluginContext } from '@plugins/types';
+import { BackgroundRenderer } from '@effects/BackgroundRenderer';
+import type { BackgroundConfig } from '@effects/BackgroundRenderer';
+import type { StreamingConfig } from '@config/streaming';
+import { DEFAULT_STREAMING_CONFIG } from '@config/streaming';
 import { EventBus } from './EventBus';
 import { GlobalState } from './GlobalState';
 
@@ -24,8 +30,11 @@ export class Engine {
   private sceneManager: SceneManager;
   private cameraSystem: CameraSystem;
   private presetManager: PresetManager;
+  private pluginManager: PluginManager;
+  private backgroundRenderer: BackgroundRenderer | null = null;
   private eventBus: EventBus;
   private globalState: GlobalState;
+  private streamingConfig: StreamingConfig;
 
   private canvas: HTMLCanvasElement | null = null;
   private running = false;
@@ -38,9 +47,13 @@ export class Engine {
     this.sceneManager = createSceneManager();
     this.cameraSystem = new CameraSystem();
     this.presetManager = new PresetManager();
+    this.pluginManager = new PluginManager();
     this.eventBus = new EventBus();
     this.globalState = new GlobalState();
     this.audioState = createDefaultAudioState();
+    this.streamingConfig = { ...DEFAULT_STREAMING_CONFIG };
+
+    this.setupPluginContext();
   }
 
   /**
@@ -61,6 +74,12 @@ export class Engine {
 
     this.sceneManager.setRenderer(this.renderPipeline.getRenderer());
     this.cameraSystem.setAspect(width / height);
+
+    // Initialize background renderer on the active scene
+    const activeScene = this.sceneManager.getActiveScene();
+    if (activeScene) {
+      this.backgroundRenderer = new BackgroundRenderer(activeScene.getScene());
+    }
 
     // Load the first scene
     this.sceneManager.loadScene('circular-spectrum');
@@ -189,6 +208,44 @@ export class Engine {
   }
 
   /**
+   * Get the plugin manager instance.
+   */
+  getPluginManager(): PluginManager {
+    return this.pluginManager;
+  }
+
+  /**
+   * Get the background renderer instance.
+   */
+  getBackgroundRenderer(): BackgroundRenderer | null {
+    return this.backgroundRenderer;
+  }
+
+  /**
+   * Set the streaming configuration.
+   */
+  setStreamingConfig(config: Partial<StreamingConfig>): void {
+    this.streamingConfig = { ...this.streamingConfig, ...config };
+    this.globalState.set('streamingMode', this.streamingConfig.mode);
+  }
+
+  /**
+   * Get the current streaming configuration.
+   */
+  getStreamingConfig(): StreamingConfig {
+    return { ...this.streamingConfig };
+  }
+
+  /**
+   * Set the background configuration.
+   */
+  setBackground(config: BackgroundConfig): void {
+    if (this.backgroundRenderer) {
+      this.backgroundRenderer.setBackground(config);
+    }
+  }
+
+  /**
    * Get whether the engine is running.
    */
   getIsRunning(): boolean {
@@ -202,6 +259,11 @@ export class Engine {
     this.stop();
     this.audioManager.destroy();
     this.sceneManager.dispose();
+    this.pluginManager.dispose();
+    if (this.backgroundRenderer) {
+      this.backgroundRenderer.dispose();
+      this.backgroundRenderer = null;
+    }
     if (this.renderPipeline) {
       this.renderPipeline.dispose();
       this.renderPipeline = null;
@@ -233,7 +295,16 @@ export class Engine {
     // 4. Update camera
     this.cameraSystem.update(deltaTime, this.audioState);
 
-    // 5. Render
+    // 5. Notify plugins
+    this.pluginManager.onAudioUpdate(this.audioState);
+    this.pluginManager.onRender(deltaTime);
+
+    // 6. Update background
+    if (this.backgroundRenderer) {
+      this.backgroundRenderer.update();
+    }
+
+    // 7. Render
     const activeScene = this.sceneManager.getActiveScene();
     if (activeScene && this.renderPipeline) {
       this.renderPipeline.render(
@@ -243,7 +314,7 @@ export class Engine {
       );
     }
 
-    // 6. Update performance stats in global state
+    // 8. Update performance stats in global state
     const stats = this.getPerformanceStats();
     this.globalState.set('performanceStats', stats);
 
@@ -290,5 +361,24 @@ export class Engine {
       const merged = { ...createDefaultPostProcessingConfig(), ...ppConfig };
       this.renderPipeline.setPostProcessingConfig(merged);
     }
+  }
+
+  private setupPluginContext(): void {
+    this.pluginManager.setContextFactory((): PluginContext => ({
+      audioState: () => this.audioState,
+      sceneManager: {
+        loadScene: (id: string) => this.loadScene(id),
+        getActiveSceneId: () =>
+          (this.globalState.get('currentSceneId') as string) ?? '',
+      },
+      eventBus: {
+        on: (event: string, handler: Function) =>
+          this.eventBus.on(event as any, handler as any),
+        off: (event: string, handler: Function) =>
+          this.eventBus.off(event as any, handler as any),
+      },
+      registerCommand: (name: string, handler: () => void) =>
+        this.pluginManager.registerCommand(name, handler),
+    }));
   }
 }

@@ -10,6 +10,8 @@ import { SceneSelector } from '../components/SceneSelector';
 import { PresetBrowser } from '../components/PresetBrowser';
 import { ControlPanel } from '../panels/ControlPanel';
 import type { ControlPanelSettings } from '../panels/ControlPanel';
+import { StreamingPanel } from '../panels/StreamingPanel';
+import { WallpaperPanel } from '../panels/WallpaperPanel';
 import { Button } from '../components/Button';
 import { useEngine } from '../hooks/useEngine';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
@@ -40,6 +42,8 @@ export const MainLayout: React.FC = () => {
   const [showSceneSelector, setShowSceneSelector] = useState(false);
   const [showPresetBrowser, setShowPresetBrowser] = useState(false);
   const [showControlPanel, setShowControlPanel] = useState(true);
+  const [showStreamingPanel, setShowStreamingPanel] = useState(false);
+  const [showWallpaperPanel, setShowWallpaperPanel] = useState(false);
   const [audioPermissionAsked, setAudioPermissionAsked] = useState(false);
   const [activeSceneId, setActiveSceneId] = useState<string | null>('circular-spectrum');
   const [activePresetId, setActivePresetId] = useState<string | null>(null);
@@ -215,6 +219,20 @@ export const MainLayout: React.FC = () => {
                 >
                   CTRL
                 </Button>
+                <Button
+                  variant="ghost"
+                  className="!px-2 !py-1 text-[10px]"
+                  onClick={() => setShowStreamingPanel((v) => !v)}
+                >
+                  STREAM
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="!px-2 !py-1 text-[10px]"
+                  onClick={() => setShowWallpaperPanel((v) => !v)}
+                >
+                  WALLPAPER
+                </Button>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -281,11 +299,19 @@ export const MainLayout: React.FC = () => {
           </div>
 
           {/* Right panel */}
-          <div className="absolute top-16 right-3 pointer-events-auto">
+          <div className="absolute top-16 right-3 pointer-events-auto space-y-2">
             <ControlPanel
               settings={controlSettings}
               onSettingsChange={setControlSettings}
               visible={showControlPanel}
+            />
+            <StreamingPanel
+              visible={showStreamingPanel}
+              onClose={() => setShowStreamingPanel(false)}
+            />
+            <WallpaperPanel
+              visible={showWallpaperPanel}
+              onClose={() => setShowWallpaperPanel(false)}
             />
           </div>
 

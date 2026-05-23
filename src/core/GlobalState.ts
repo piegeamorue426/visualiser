@@ -11,6 +11,7 @@ export interface GlobalStateValues {
   uiVisible: boolean;
   fullscreen: boolean;
   performanceStats: RenderStats;
+  streamingMode: string;
 }
 
 type StateKey = keyof GlobalStateValues;
@@ -30,6 +31,7 @@ export class GlobalState {
       triangles: 0,
       memoryUsage: 0,
     },
+    streamingMode: 'normal',
   };
 
   private subscribers: Map<StateKey, Set<StateCallback<any>>> = new Map();

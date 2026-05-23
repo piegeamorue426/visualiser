@@ -2,7 +2,7 @@
   "id": "FEAT-006",
   "type": "feat",
   "description": "Implement streaming/OBS support architecture, wallpaper engine compatibility layer, community features architecture, plugin system, and final integration ensuring the complete application builds and all systems work together.",
-  "status": "pending",
+  "status": "in_progress",
   "steps": [
     "Create src/plugins/types.ts - Plugin interface (id, name, version, init, destroy, onAudioUpdate, onRender). Define PluginContext with access to audio state, render engine, scene manager",
     "Create src/plugins/PluginManager.ts - load/unload plugins, manage plugin lifecycle, provide sandboxed context to plugins, emit events to plugins",
