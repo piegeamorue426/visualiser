@@ -23,17 +23,17 @@ export function createTray(mainWindow: BrowserWindow): Tray {
 
   const sceneIds = [
     'circular-spectrum',
-    'waveform-terrain',
-    'particle-nebula',
-    'geometric-tunnel',
-    'frequency-bars',
-    'audio-landscape',
-    'plasma-field',
-    'star-field',
-    'fractal-tree',
-    'dna-helix',
-    'ocean-waves',
-    'northern-lights',
+    'trap-nation-ring',
+    'particle-galaxy',
+    'infinite-tunnel',
+    'neon-waveform',
+    'audio-terrain',
+    'geometric-pulse',
+    'space',
+    'cyberpunk-city',
+    'reactive-vortex',
+    'energy-storm',
+    'fluid-simulation',
   ];
 
   const sceneMenuItems = sceneIds.map((id) => ({

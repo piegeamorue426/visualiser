@@ -6,6 +6,7 @@
 import { AudioManager } from '@audio/AudioManager';
 import type { AudioState } from '@audio/types';
 import { createDefaultAudioState } from '@audio/types';
+import * as THREE from 'three';
 import { RenderPipeline } from '@render/RenderPipeline';
 import type { RenderStats, PostProcessingConfig } from '@render/types';
 import { createDefaultPostProcessingConfig } from '@render/types';
@@ -21,6 +22,8 @@ import { BackgroundRenderer } from '@effects/BackgroundRenderer';
 import type { BackgroundConfig } from '@effects/BackgroundRenderer';
 import type { StreamingConfig } from '@config/streaming';
 import { DEFAULT_STREAMING_CONFIG } from '@config/streaming';
+import type { WallpaperConfig } from '@config/wallpaper';
+import { DEFAULT_WALLPAPER_CONFIG } from '@config/wallpaper';
 import { EventBus } from './EventBus';
 import { GlobalState } from './GlobalState';
 
@@ -35,11 +38,13 @@ export class Engine {
   private eventBus: EventBus;
   private globalState: GlobalState;
   private streamingConfig: StreamingConfig;
+  private wallpaperConfig: WallpaperConfig;
 
   private canvas: HTMLCanvasElement | null = null;
   private running = false;
   private animationFrameId: number | null = null;
   private lastTime = 0;
+  private lastRenderTime = 0;
   private audioState: AudioState;
 
   constructor() {
@@ -52,6 +57,7 @@ export class Engine {
     this.globalState = new GlobalState();
     this.audioState = createDefaultAudioState();
     this.streamingConfig = { ...DEFAULT_STREAMING_CONFIG };
+    this.wallpaperConfig = { ...DEFAULT_WALLPAPER_CONFIG };
 
     this.setupPluginContext();
   }
@@ -237,11 +243,99 @@ export class Engine {
   }
 
   /**
+   * Set the wallpaper configuration.
+   */
+  setWallpaperConfig(config: Partial<WallpaperConfig>): void {
+    this.wallpaperConfig = { ...this.wallpaperConfig, ...config };
+  }
+
+  /**
+   * Get the current wallpaper configuration.
+   */
+  getWallpaperConfig(): WallpaperConfig {
+    return { ...this.wallpaperConfig };
+  }
+
+  /**
    * Set the background configuration.
    */
   setBackground(config: BackgroundConfig): void {
     if (this.backgroundRenderer) {
       this.backgroundRenderer.setBackground(config);
+    }
+  }
+
+  /**
+   * Apply control panel settings to the relevant engine systems.
+   */
+  applyControlSettings(settings: {
+    audio?: { sensitivity?: number; smoothing?: number };
+    visual?: {
+      bloom?: boolean;
+      bloomIntensity?: number;
+      chromaticAberration?: boolean;
+      vignette?: boolean;
+      filmGrain?: boolean;
+    };
+    camera?: { mode?: string; shakeIntensity?: number; orbitSpeed?: number };
+  }): void {
+    // Apply audio sensitivity/smoothing
+    if (settings.audio) {
+      const analyzer = this.audioManager.getAnalyzer();
+      if (analyzer) {
+        analyzer.setSensitivity(settings.audio.sensitivity ?? 1.0);
+        analyzer.setSmoothing(settings.audio.smoothing ?? 0.8);
+      }
+    }
+
+    // Apply visual/post-processing settings
+    if (settings.visual && this.renderPipeline) {
+      const ppConfig: Partial<PostProcessingConfig> = {
+        bloom: {
+          enabled: settings.visual.bloom ?? true,
+          intensity: settings.visual.bloomIntensity ?? 1.5,
+          threshold: 0.6,
+          radius: 0.4,
+        },
+        chromaticAberration: {
+          enabled: settings.visual.chromaticAberration ?? true,
+          offset: 0.002,
+        },
+        vignette: {
+          enabled: settings.visual.vignette ?? true,
+          intensity: 0.8,
+          smoothness: 0.4,
+        },
+        filmGrain: {
+          enabled: settings.visual.filmGrain ?? false,
+          intensity: 0.05,
+          speed: 1.0,
+        },
+      };
+      const merged = { ...createDefaultPostProcessingConfig(), ...ppConfig };
+      this.renderPipeline.setPostProcessingConfig(merged);
+    }
+
+    // Apply camera settings
+    if (settings.camera) {
+      if (settings.camera.mode) {
+        const modeMap: Record<string, CameraMode> = {
+          orbit: CameraMode.Orbit,
+          static: CameraMode.Static,
+          cinematic: CameraMode.Cinematic,
+          follow: CameraMode.Follow,
+        };
+        const mode = modeMap[settings.camera.mode];
+        if (mode !== undefined) {
+          this.cameraSystem.setMode(mode);
+        }
+      }
+      if (settings.camera.shakeIntensity !== undefined) {
+        this.cameraSystem.setShakeIntensity(settings.camera.shakeIntensity);
+      }
+      if (settings.camera.orbitSpeed !== undefined) {
+        this.cameraSystem.setOrbitSpeed(settings.camera.orbitSpeed);
+      }
     }
   }
 
@@ -271,10 +365,34 @@ export class Engine {
     this.eventBus.clear();
   }
 
+  private getTargetFps(): number {
+    // Wallpaper mode FPS limit takes priority
+    if (this.wallpaperConfig.enabled && this.wallpaperConfig.fpsLimit > 0) {
+      return this.wallpaperConfig.fpsLimit;
+    }
+    // Streaming mode FPS target
+    if (this.streamingConfig.mode !== 'normal' && this.streamingConfig.targetFps > 0) {
+      return this.streamingConfig.targetFps;
+    }
+    return 0; // 0 means uncapped
+  }
+
   private loop(): void {
     if (!this.running) return;
 
     const now = performance.now();
+
+    // Frame throttling: skip frame if target FPS is set and interval hasn't elapsed
+    const targetFps = this.getTargetFps();
+    if (targetFps > 0 && targetFps < 60) {
+      const minFrameInterval = 1000 / targetFps;
+      if (now - this.lastRenderTime < minFrameInterval) {
+        this.animationFrameId = requestAnimationFrame(() => this.loop());
+        return;
+      }
+    }
+    this.lastRenderTime = now;
+
     const deltaTime = Math.min((now - this.lastTime) / 1000, 0.1);
     this.lastTime = now;
 
@@ -292,8 +410,11 @@ export class Engine {
     // 3. Update scene
     this.sceneManager.update(deltaTime, this.audioState);
 
-    // 4. Update camera
-    this.cameraSystem.update(deltaTime, this.audioState);
+    // 4. Update camera - apply camera system to active scene's camera
+    const activeScene = this.sceneManager.getActiveScene();
+    if (activeScene) {
+      this.cameraSystem.updateTarget(activeScene.getCamera() as THREE.PerspectiveCamera, deltaTime, this.audioState);
+    }
 
     // 5. Notify plugins
     this.pluginManager.onAudioUpdate(this.audioState);
@@ -305,7 +426,6 @@ export class Engine {
     }
 
     // 7. Render
-    const activeScene = this.sceneManager.getActiveScene();
     if (activeScene && this.renderPipeline) {
       this.renderPipeline.render(
         activeScene.getScene(),

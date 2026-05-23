@@ -76,13 +76,32 @@ export function useEngine(): UseEngineReturn {
     }
   }, []);
 
-  // Poll for audio state and stats at 60fps
+  // Poll for audio state and stats at 60fps, but only update React state when values change
   useEffect(() => {
     let rafId: number;
+    let lastFps = 0;
+    let lastEnergy = 0;
+    let lastBeatDetected = false;
+
     const update = () => {
       if (engineRef.current && engineRef.current.getIsRunning()) {
-        setAudioState(engineRef.current.getAudioState());
-        setStats(engineRef.current.getPerformanceStats());
+        const newAudio = engineRef.current.getAudioState();
+        const newStats = engineRef.current.getPerformanceStats();
+
+        // Only trigger React re-renders when meaningful values change
+        const energyChanged = Math.abs(newAudio.energy - lastEnergy) > 0.01;
+        const beatChanged = newAudio.beatDetected !== lastBeatDetected;
+        if (energyChanged || beatChanged) {
+          lastEnergy = newAudio.energy;
+          lastBeatDetected = newAudio.beatDetected;
+          setAudioState(newAudio);
+        }
+
+        const fpsChanged = Math.abs(newStats.fps - lastFps) > 1;
+        if (fpsChanged) {
+          lastFps = newStats.fps;
+          setStats(newStats);
+        }
       }
       rafId = requestAnimationFrame(update);
     };

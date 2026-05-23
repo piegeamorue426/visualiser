@@ -39,6 +39,7 @@ export class AudioAnalyzer {
 
   private state: AudioState;
   private frameTime = 0;
+  private sensitivity = 1.0;
 
   constructor(fftSize: number = DEFAULTS.FFT_SIZE, sampleRate: number = 44100) {
     this.fftSize = fftSize;
@@ -96,10 +97,10 @@ export class AudioAnalyzer {
     this.analyserNode.getFloatTimeDomainData(this.timeDomainData);
     this.analyserNode.getByteFrequencyData(this.byteFrequencyData);
 
-    // Compute frequency bands (using byte data normalized to 0-1)
+    // Compute frequency bands (using byte data normalized to 0-1, with sensitivity)
     const normalizedData = new Float32Array(this.byteFrequencyData.length);
     for (let i = 0; i < this.byteFrequencyData.length; i++) {
-      normalizedData[i] = this.byteFrequencyData[i] / 255;
+      normalizedData[i] = Math.min(1, (this.byteFrequencyData[i] / 255) * this.sensitivity);
     }
 
     const subBass = getBandEnergy(normalizedData, 20, 60, this.fftSize, this.sampleRate);
@@ -187,6 +188,23 @@ export class AudioAnalyzer {
     this.state.snareDetected = snareDetected;
 
     return this.state;
+  }
+
+  /**
+   * Set the audio sensitivity multiplier.
+   * Values above 1.0 amplify the signal, below 1.0 reduce it.
+   */
+  setSensitivity(sensitivity: number): void {
+    this.sensitivity = sensitivity;
+  }
+
+  /**
+   * Set the smoothing time constant for the analyser node.
+   */
+  setSmoothing(smoothing: number): void {
+    if (this.analyserNode) {
+      this.analyserNode.smoothingTimeConstant = smoothing;
+    }
   }
 
   /**

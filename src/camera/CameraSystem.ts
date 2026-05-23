@@ -62,6 +62,33 @@ export class CameraSystem {
   }
 
   /**
+   * Update and apply camera effects to a target camera (the scene's camera).
+   * This allows the CameraSystem to augment the scene's own camera rather than
+   * maintaining a completely separate camera.
+   */
+  updateTarget(target: THREE.PerspectiveCamera, deltaTime: number, audioState?: AudioState): void {
+    this.time += deltaTime;
+
+    // Apply audio reactivity effects directly to the target camera
+    if (audioState) {
+      this.applyBassShake(audioState);
+      this.applyAutoZoom(audioState, deltaTime);
+    }
+
+    // Apply shake offset to the target camera
+    target.position.add(this.shakeOffset);
+
+    // Apply auto-zoom FOV to target camera
+    if (this.config.autoZoom && audioState) {
+      target.fov = this.currentFov;
+      target.updateProjectionMatrix();
+    }
+
+    // Dampen shake
+    this.shakeOffset.multiplyScalar(0.85);
+  }
+
+  /**
    * Update the camera each frame based on mode and audio state.
    */
   update(deltaTime: number, audioState?: AudioState): void {
@@ -228,6 +255,20 @@ export class CameraSystem {
    */
   setMode(mode: CameraMode): void {
     this.currentMode = mode;
+  }
+
+  /**
+   * Set the shake intensity.
+   */
+  setShakeIntensity(intensity: number): void {
+    this.config.shakeIntensity = intensity;
+  }
+
+  /**
+   * Set the orbit speed.
+   */
+  setOrbitSpeed(speed: number): void {
+    this.config.orbitSpeed = speed;
   }
 
   /**

@@ -10,16 +10,20 @@ export class SceneManager {
   private activeScene: BaseScene | null = null;
   private previousScene: BaseScene | null = null;
   private registry: Map<string, () => BaseScene> = new Map();
+  private configRegistry: Map<string, SceneConfig> = new Map();
   private renderer: THREE.WebGLRenderer | null = null;
   private transitionProgress = 1;
   private transitionDuration = 1.5;
   private isTransitioning = false;
 
   /**
-   * Register a scene factory by id for lazy construction.
+   * Register a scene factory by id for lazy construction, with optional static metadata.
    */
-  registerScene(id: string, factory: () => BaseScene): void {
+  registerScene(id: string, factory: () => BaseScene, config?: SceneConfig): void {
     this.registry.set(id, factory);
+    if (config) {
+      this.configRegistry.set(id, config);
+    }
   }
 
   /**
@@ -109,14 +113,15 @@ export class SceneManager {
   }
 
   /**
-   * Get a list of all available scene configurations.
+   * Get a list of all available scene configurations without instantiating scenes.
    */
   getAvailableScenes(): { id: string; config: SceneConfig }[] {
     const scenes: { id: string; config: SceneConfig }[] = [];
-    for (const [id, factory] of this.registry.entries()) {
-      const scene = factory();
-      scenes.push({ id, config: scene.config });
-      scene.dispose();
+    for (const [id] of this.registry.entries()) {
+      const config = this.configRegistry.get(id);
+      if (config) {
+        scenes.push({ id, config });
+      }
     }
     return scenes;
   }

@@ -17,6 +17,7 @@ export class RenderPipeline {
   private postProcessing: PostProcessingStack;
   private config: RenderConfig;
   private lastTime = 0;
+  private lastAppliedScale = 1.0;
 
   constructor(canvas: HTMLCanvasElement, config?: Partial<RenderConfig>) {
     this.config = { ...createDefaultRenderConfig(), ...config };
@@ -64,8 +65,15 @@ export class RenderPipeline {
       info.render.triangles
     );
 
-    // Evaluate adaptive quality
-    this.performanceMonitor.evaluatePerformance();
+    // Evaluate adaptive quality and apply resolution scaling
+    const recommendedScale = this.performanceMonitor.evaluatePerformance();
+    if (recommendedScale !== this.lastAppliedScale) {
+      this.lastAppliedScale = recommendedScale;
+      const w = Math.round(this.config.width * recommendedScale);
+      const h = Math.round(this.config.height * recommendedScale);
+      this.renderer.setSize(w, h, false);
+      this.postProcessing.resize(w, h);
+    }
   }
 
   /**

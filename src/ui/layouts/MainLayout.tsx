@@ -67,6 +67,20 @@ export const MainLayout: React.FC = () => {
     },
   });
 
+  const handleControlSettingsChange = useCallback(
+    (newSettings: ControlPanelSettings) => {
+      setControlSettings(newSettings);
+      if (engine) {
+        engine.applyControlSettings({
+          audio: newSettings.audio,
+          visual: newSettings.visual,
+          camera: newSettings.camera,
+        });
+      }
+    },
+    [engine]
+  );
+
   const sceneIdsRef = useRef<string[]>([]);
 
   // Populate scenes list from engine
@@ -302,7 +316,7 @@ export const MainLayout: React.FC = () => {
           <div className="absolute top-16 right-3 pointer-events-auto space-y-2">
             <ControlPanel
               settings={controlSettings}
-              onSettingsChange={setControlSettings}
+              onSettingsChange={handleControlSettingsChange}
               visible={showControlPanel}
             />
             <StreamingPanel
