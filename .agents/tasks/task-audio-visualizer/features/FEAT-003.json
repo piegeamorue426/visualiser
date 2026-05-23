@@ -2,7 +2,7 @@
   "id": "FEAT-003",
   "type": "feat",
   "description": "Implement the Three.js render pipeline with post-processing, the modular shader system, the GPU particle engine, and the cinematic camera system. This forms the visual rendering backbone of the application.",
-  "status": "pending",
+  "status": "in_progress",
   "steps": [
     "Create src/render-engine/types.ts - RenderConfig, PostProcessingConfig, ShaderUniform types",
     "Create src/render-engine/RenderPipeline.ts - main rendering class wrapping Three.js WebGLRenderer. Initialize with canvas element, manage render loop with requestAnimationFrame, support adaptive quality (reduce resolution under load). Expose: render(scene, camera), resize(), setQuality(), getStats()",
