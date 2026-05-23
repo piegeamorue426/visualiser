@@ -2,7 +2,7 @@
   "id": "FEAT-003",
   "type": "feat",
   "description": "Implement the Three.js render pipeline with post-processing, the modular shader system, the GPU particle engine, and the cinematic camera system. This forms the visual rendering backbone of the application.",
-  "status": "in_progress",
+  "status": "completed",
   "steps": [
     "Create src/render-engine/types.ts - RenderConfig, PostProcessingConfig, ShaderUniform types",
     "Create src/render-engine/RenderPipeline.ts - main rendering class wrapping Three.js WebGLRenderer. Initialize with canvas element, manage render loop with requestAnimationFrame, support adaptive quality (reduce resolution under load). Expose: render(scene, camera), resize(), setQuality(), getStats()",
@@ -49,5 +49,5 @@
     "pnpm test -- --run"
   ],
   "blocked_reason": null,
-  "findings": ""
+  "findings": "All 71 tests pass (34 new tests: 22 for ParticleEmitter, 12 for PerformanceMonitor). TypeScript compiles without errors. Build succeeds. The PostProcessingStack uses inline shader definitions (vertexShader/fragmentShader strings) for the custom passes rather than importing the .glsl files directly, because ShaderPass expects JS shader objects with uniforms. The standalone .glsl files serve as reference implementations for the shader logic. GLSL module declarations in glsl.d.ts cover .glsl, .vert, and .frag extensions. The GPUParticleSystem uses window?.devicePixelRatio with optional chaining for testability in jsdom. Vitest ran in watch mode despite --run flag being passed via double-dash; tests completed successfully regardless."
 }
