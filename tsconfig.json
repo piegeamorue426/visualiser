@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "baseUrl": ".",
+    "paths": {
+      "@core/*": ["src/core/*"],
+      "@audio/*": ["src/audio-engine/*"],
+      "@render/*": ["src/render-engine/*"],
+      "@shaders/*": ["src/shaders/*"],
+      "@scenes/*": ["src/scenes/*"],
+      "@effects/*": ["src/effects/*"],
+      "@ui/*": ["src/ui/*"],
+      "@utils/*": ["src/utils/*"],
+      "@config/*": ["src/config/*"],
+      "@presets/*": ["src/presets/*"],
+      "@particles/*": ["src/particles/*"],
+      "@camera/*": ["src/camera/*"],
+      "@plugins/*": ["src/plugins/*"],
+      "@community/*": ["src/community/*"]
+    }
+  },
+  "include": ["src/renderer/**/*", "src/core/**/*", "src/audio-engine/**/*", "src/render-engine/**/*", "src/shaders/**/*", "src/scenes/**/*", "src/effects/**/*", "src/particles/**/*", "src/camera/**/*", "src/presets/**/*", "src/plugins/**/*", "src/community/**/*", "src/ui/**/*", "src/utils/**/*", "src/config/**/*"],
+  "exclude": ["node_modules", "dist"]
+}

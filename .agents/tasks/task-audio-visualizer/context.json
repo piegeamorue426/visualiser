@@ -1,0 +1,26 @@
+{
+  "project_type": "Electron desktop app with React, Three.js, Web Audio API",
+  "language": "TypeScript",
+  "build_system": "Vite for bundling, electron-builder for packaging",
+  "test_framework": "Vitest for unit tests",
+  "build_command": "pnpm build",
+  "test_command": "pnpm test",
+  "verification_instructions": "1. Run pnpm install, 2. Run pnpm build to confirm TypeScript compiles and Vite bundles, 3. Run pnpm test to confirm tests pass, 4. Run pnpm typecheck for type verification",
+  "snapshot_or_generated_files": null,
+  "setup_instructions": "pnpm install",
+  "environment_constraints": "OPEN_INTERNET - full access to npm registries. Node v22 available. No display server for Electron GUI testing, but build and type-check are feasible. Cannot run Electron in headless mode for integration tests.",
+  "contribution_requirements": "N/A - greenfield project",
+  "key_patterns": "Modular architecture with separate engine systems (audio, render, shader, scene, camera, particle, preset). Each system is a self-contained module with clean interfaces. React components use functional style with hooks. Three.js scenes are managed via a render engine abstraction. GLSL shaders stored as separate .glsl files.",
+  "relevant_files": [
+    "src/main/main.ts - Electron main process",
+    "src/renderer/App.tsx - React root",
+    "src/core/Engine.ts - Main engine orchestrator",
+    "src/audio-engine/AudioAnalyzer.ts - Audio analysis",
+    "src/render-engine/RenderPipeline.ts - Three.js rendering",
+    "src/shaders/ - GLSL shader files",
+    "src/scenes/ - Visualizer scene implementations",
+    "src/presets/ - Preset system",
+    "src/ui/ - React UI components"
+  ],
+  "directory_structure": "src/main (Electron main process), src/renderer (React app), src/core (engine core), src/audio-engine (audio analysis), src/render-engine (Three.js pipeline), src/shaders (GLSL), src/scenes (visualizer modes), src/effects (post-processing), src/particles (GPU particles), src/camera (camera system), src/presets (preset management), src/plugins (plugin architecture), src/community (community features), src/ui (React components), src/utils (utilities), src/config (configuration), src/assets (static assets)"
+}

@@ -1,0 +1,40 @@
+{
+  "id": "FEAT-001",
+  "type": "chore",
+  "description": "Scaffold the complete Electron + React + Vite + TypeScript + TailwindCSS project with the full modular directory structure. Set up build tooling, dev scripts, and core configuration files.",
+  "status": "in_progress",
+  "steps": [
+    "Initialize pnpm project with package.json including all dependencies: electron, react, react-dom, three, @types/three, typescript, vite, @vitejs/plugin-react, tailwindcss, postcss, autoprefixer, electron-builder, vitest, @testing-library/react, concurrently, electron-vite or vite-plugin-electron",
+    "Create vite.config.ts for the renderer process with React plugin and path aliases",
+    "Create electron main process entry at src/main/main.ts that creates a BrowserWindow loading the Vite dev server or built output",
+    "Create src/main/preload.ts with contextBridge exposing IPC APIs for audio device access",
+    "Create src/renderer/index.html as the Electron renderer HTML entry",
+    "Create src/renderer/main.tsx as the React entry point",
+    "Create src/renderer/App.tsx as the root React component with basic layout shell",
+    "Set up TailwindCSS with tailwind.config.ts and src/renderer/styles/globals.css with cyberpunk/dark theme colors",
+    "Create tsconfig.json with strict mode, path aliases (@core, @audio, @render, @shaders, @scenes, @effects, @ui, @utils, @config, @presets, @particles, @camera, @plugins, @community)",
+    "Create the full directory structure: src/core/, src/audio-engine/, src/render-engine/, src/shaders/, src/shaders/post-processing/, src/shaders/vertex/, src/shaders/fragment/, src/scenes/, src/effects/, src/particles/, src/camera/, src/presets/, src/plugins/, src/community/, src/ui/, src/ui/components/, src/ui/panels/, src/ui/layouts/, src/utils/, src/config/, src/assets/",
+    "Create src/core/Engine.ts stub - the main orchestrator class that will initialize audio, render, and scene systems",
+    "Create src/config/defaults.ts with default configuration constants (resolution, FPS target, audio FFT size, etc.)",
+    "Create src/utils/math.ts with common math utilities (lerp, clamp, map, smoothstep)",
+    "Create package.json scripts: dev (concurrent Vite + Electron), build (Vite build + electron-builder), test (vitest), typecheck (tsc --noEmit), lint",
+    "Create a basic vitest.config.ts",
+    "Create README.md with project overview, tech stack, installation guide, development guide, build instructions"
+  ],
+  "acceptance_criteria": [
+    "pnpm install completes without errors",
+    "pnpm build compiles TypeScript and bundles the renderer without errors",
+    "pnpm typecheck passes with no type errors",
+    "pnpm test runs (even if no tests yet, the runner initializes)",
+    "Directory structure exists with all required folders",
+    "README.md documents installation, development, and build"
+  ],
+  "verification": [
+    "pnpm install",
+    "pnpm typecheck",
+    "pnpm build",
+    "pnpm test -- --run"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

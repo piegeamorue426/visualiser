@@ -1,0 +1,49 @@
+{
+  "id": "FEAT-006",
+  "type": "feat",
+  "description": "Implement streaming/OBS support architecture, wallpaper engine compatibility layer, community features architecture, plugin system, and final integration ensuring the complete application builds and all systems work together.",
+  "status": "pending",
+  "steps": [
+    "Create src/plugins/types.ts - Plugin interface (id, name, version, init, destroy, onAudioUpdate, onRender). Define PluginContext with access to audio state, render engine, scene manager",
+    "Create src/plugins/PluginManager.ts - load/unload plugins, manage plugin lifecycle, provide sandboxed context to plugins, emit events to plugins",
+    "Create src/plugins/index.ts exporting plugin system",
+    "Create src/community/types.ts - CommunityPreset, UserProfile, Rating interfaces for future community features",
+    "Create src/community/CommunityManager.ts - stub implementation with methods: browsePresets(), uploadPreset(), ratePreset(), downloadPreset(). Currently returns mock data but architecture is ready for API integration",
+    "Create src/community/index.ts exporting community module",
+    "Create src/config/streaming.ts - StreamingConfig with modes: normal, obs-optimized (higher bitrate, stable FPS), transparent-background (alpha channel rendering), chroma-key (solid green/blue background), ui-hidden (no overlay rendering), wallpaper (borderless, always-behind, low-CPU)",
+    "Create src/config/wallpaper.ts - WallpaperConfig for Wallpaper Engine compatibility: transparent rendering, reduced FPS mode, system tray only, auto-start, respond to Wallpaper Engine properties protocol",
+    "Create src/main/ipc-handlers.ts - Electron IPC handlers for: audio device enumeration, system audio capture via desktopCapturer, window mode changes (fullscreen, transparent, always-on-top, frameless), file dialogs for preset import/export, system tray management",
+    "Create src/main/tray.ts - system tray with quick actions: toggle visualizer, change scene, change preset, quit",
+    "Create src/ui/panels/StreamingPanel.tsx - UI panel for streaming mode selection, background options (transparent, chroma key, custom color), performance preset for streaming",
+    "Create src/ui/panels/WallpaperPanel.tsx - UI panel for wallpaper mode settings: FPS limit, CPU usage target, start with system toggle",
+    "Create src/ui/components/BackgroundSelector.tsx - select background: solid color, gradient, image upload, video, GIF, transparent. Store in config",
+    "Create src/effects/BackgroundRenderer.ts - render custom backgrounds (images, videos, GIFs, gradients) behind the Three.js scene using a separate layer or background plane",
+    "Create src/effects/OverlayRenderer.ts - render overlays on top of scenes: center logo, custom text, image overlays with positioning",
+    "Update src/core/Engine.ts to integrate: PluginManager, BackgroundRenderer, OverlayRenderer, streaming modes",
+    "Update src/renderer/App.tsx to include StreamingPanel and WallpaperPanel in the control UI",
+    "Create src/config/keyboard-shortcuts.ts - complete keyboard shortcut map that is user-configurable",
+    "Create src/utils/export.ts - utility to export current frame as PNG, export animation as GIF/WebM (architecture only, using canvas capture)",
+    "Ensure all modules have proper index.ts barrel exports",
+    "Final integration: verify all imports resolve, all types are consistent across modules, no circular dependencies",
+    "Create comprehensive README.md with: project overview, architecture diagram (text), installation (pnpm install), development (pnpm dev), building (pnpm build), features list, keyboard shortcuts, customization guide, plugin development guide, streaming setup guide"
+  ],
+  "acceptance_criteria": [
+    "PluginManager supports loading plugins with typed interfaces",
+    "CommunityManager provides stubbed API for future community features",
+    "Streaming modes are configurable and stored in config",
+    "Wallpaper mode configuration is available",
+    "IPC handlers bridge main and renderer processes properly",
+    "BackgroundRenderer supports multiple background types",
+    "All modules have proper barrel exports with no circular dependencies",
+    "Full project builds successfully with pnpm build",
+    "TypeScript strict mode passes with no errors",
+    "README.md is comprehensive and professional"
+  ],
+  "verification": [
+    "pnpm typecheck",
+    "pnpm build",
+    "pnpm test -- --run"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

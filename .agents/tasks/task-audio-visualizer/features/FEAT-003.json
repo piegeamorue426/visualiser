@@ -1,0 +1,53 @@
+{
+  "id": "FEAT-003",
+  "type": "feat",
+  "description": "Implement the Three.js render pipeline with post-processing, the modular shader system, the GPU particle engine, and the cinematic camera system. This forms the visual rendering backbone of the application.",
+  "status": "pending",
+  "steps": [
+    "Create src/render-engine/types.ts - RenderConfig, PostProcessingConfig, ShaderUniform types",
+    "Create src/render-engine/RenderPipeline.ts - main rendering class wrapping Three.js WebGLRenderer. Initialize with canvas element, manage render loop with requestAnimationFrame, support adaptive quality (reduce resolution under load). Expose: render(scene, camera), resize(), setQuality(), getStats()",
+    "Create src/render-engine/PostProcessingStack.ts - composable post-processing using Three.js EffectComposer. Support ordered chain of: UnrealBloomPass, custom ChromaticAberrationPass, custom MotionBlurPass, custom DepthOfFieldPass, custom VignettePass, custom FilmGrainPass, custom ColorGradingPass, custom GlowPass. Each effect toggleable and configurable",
+    "Create src/render-engine/PerformanceMonitor.ts - track FPS, frame time, GPU memory (if available via WebGL extensions), draw calls, triangles. Implement adaptive quality: if FPS drops below target, reduce resolution scale or disable expensive effects",
+    "Create src/render-engine/index.ts exporting public API",
+    "Create src/shaders/ShaderManager.ts - load and cache GLSL shaders, support hot reload in dev, compile and link programs, manage uniform updates. Provide audio-reactive uniforms automatically (u_bass, u_energy, u_time, u_beat, u_spectrum)",
+    "Create src/shaders/ShaderPresets.ts - registry of built-in shader configurations with names, descriptions, and default parameters",
+    "Create src/shaders/post-processing/bloom.frag.glsl - custom bloom fragment shader",
+    "Create src/shaders/post-processing/chromatic-aberration.frag.glsl - RGB channel offset based on audio energy",
+    "Create src/shaders/post-processing/vignette.frag.glsl - configurable vignette with audio reactivity",
+    "Create src/shaders/post-processing/film-grain.frag.glsl - animated film grain noise",
+    "Create src/shaders/post-processing/color-grading.frag.glsl - LUT-style color grading",
+    "Create src/shaders/post-processing/distortion.frag.glsl - wave distortion reactive to bass",
+    "Create src/shaders/vertex/displacement.vert.glsl - audio reactive vertex displacement",
+    "Create src/shaders/fragment/raymarching.frag.glsl - basic raymarching SDF template",
+    "Create src/shaders/fragment/energy-field.frag.glsl - energy field visualization",
+    "Create src/shaders/index.ts exporting shader system",
+    "Create src/particles/types.ts - ParticleConfig, ParticleSystem interface",
+    "Create src/particles/GPUParticleSystem.ts - GPU accelerated particle system using Three.js Points with BufferGeometry and custom shaders. Support 100k+ particles via instanced rendering. Properties: position, velocity, color, size, life. Physics: gravity, turbulence (simplex noise), vortex, attraction points. Audio reactivity: spawn rate linked to beats, color linked to frequency, size linked to energy, velocity linked to bass",
+    "Create src/particles/ParticleEmitter.ts - configurable emitter shapes (point, sphere, ring, plane, custom). Control spawn rate, initial velocity, spread, lifetime",
+    "Create src/particles/particle.vert.glsl - vertex shader for GPU particles with size attenuation and life-based alpha",
+    "Create src/particles/particle.frag.glsl - fragment shader for particles with soft circle rendering and color",
+    "Create src/particles/index.ts exporting particle system",
+    "Create src/camera/CameraSystem.ts - cinematic camera controller. Modes: orbit (auto-rotate around target), static, follow, cinematic (predefined paths). Features: smooth interpolation (lerp/slerp), bass shake (translate camera on beat), auto-zoom (pull back on energy), smooth transitions between modes using easing functions",
+    "Create src/camera/CameraPresets.ts - predefined camera configurations (close-up, wide, overhead, dramatic-angle, first-person)",
+    "Create src/camera/index.ts exporting camera system",
+    "Create src/render-engine/__tests__/PerformanceMonitor.test.ts - test adaptive quality logic",
+    "Create src/particles/__tests__/ParticleEmitter.test.ts - test emitter configuration and spawn logic"
+  ],
+  "acceptance_criteria": [
+    "RenderPipeline initializes Three.js renderer with proper configuration",
+    "PostProcessingStack supports adding/removing/reordering effects",
+    "ShaderManager loads GLSL files and provides audio-reactive uniforms",
+    "GPUParticleSystem creates BufferGeometry with particle attributes for 100k particles",
+    "CameraSystem supports multiple modes with smooth transitions",
+    "PerformanceMonitor tracks FPS and triggers quality adjustments",
+    "All GLSL shader files are valid and have proper uniform declarations",
+    "All unit tests pass",
+    "TypeScript compiles with no errors"
+  ],
+  "verification": [
+    "pnpm typecheck",
+    "pnpm test -- --run"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

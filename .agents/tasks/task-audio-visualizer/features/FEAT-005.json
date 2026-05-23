@@ -1,0 +1,53 @@
+{
+  "id": "FEAT-005",
+  "type": "feat",
+  "description": "Implement the preset system, the core Engine orchestrator that ties all systems together, and the complete React UI with futuristic cyberpunk styling, dockable panels, and all user-facing controls.",
+  "status": "pending",
+  "steps": [
+    "Create src/presets/types.ts - Preset interface (id, name, description, category, thumbnail, sceneId, audioConfig, renderConfig, cameraConfig, particleConfig, postProcessingConfig, customColors, createdAt, isFavorite, tags)",
+    "Create src/presets/PresetManager.ts - CRUD operations for presets. Save/load from localStorage and JSON files. Import/export presets as JSON. Support categories: cyberpunk, synthwave, neon, space, EDM, minimal, futuristic, dark, holographic, galaxy, techno. Auto-transition between presets with configurable timing",
+    "Create src/presets/built-in/ directory with at least 6 built-in preset JSON files covering different themes (cyberpunk-bass.json, synthwave-dream.json, neon-pulse.json, space-odyssey.json, edm-festival.json, minimal-zen.json)",
+    "Create src/presets/index.ts exporting preset system",
+    "Create src/core/Engine.ts - the main orchestrator. Initialize: AudioManager, RenderPipeline, SceneManager, CameraSystem, PostProcessingStack, PresetManager, PerformanceMonitor. Run the main loop: analyze audio -> update scene -> update camera -> render -> post-process. Expose start(), stop(), loadPreset(), getCurrentState()",
+    "Create src/core/EventBus.ts - typed event emitter for decoupled communication between systems (beat, drop, sceneChange, presetLoaded, qualityChanged)",
+    "Create src/core/GlobalState.ts - reactive state store (using simple pub/sub pattern) holding current AudioState, active scene, active preset, performance stats, UI state",
+    "Create src/core/index.ts exporting core module",
+    "Create src/ui/layouts/MainLayout.tsx - the main application layout with: top bar (title, performance overlay, settings button), center area (Three.js canvas), bottom bar (audio info, scene selector), side panel (controls). Use flexbox with dark theme",
+    "Create src/ui/components/Canvas3D.tsx - React component wrapping the Three.js canvas, handles resize, forwards ref to render engine",
+    "Create src/ui/components/PerformanceOverlay.tsx - FPS counter, frame time, draw calls, GPU memory, quality level. Positioned top-right corner with glassmorphism style",
+    "Create src/ui/components/AudioMeter.tsx - real-time audio level meters showing frequency bands as colored bars",
+    "Create src/ui/components/SceneSelector.tsx - grid/list of available scenes with thumbnails, categories, search. Clicking loads the scene with transition",
+    "Create src/ui/components/PresetBrowser.tsx - browse, search, favorite, load presets. Category filters, import/export buttons",
+    "Create src/ui/panels/ControlPanel.tsx - main settings panel with tabs: Audio (sensitivity, smoothing, FFT size), Visual (colors, glow, bloom intensity, particle count), Camera (mode, shake intensity, zoom speed), Post-Processing (toggle each effect, adjust parameters), Scene (scene-specific parameters)",
+    "Create src/ui/panels/ShaderPanel.tsx - shader selector, parameter sliders for active shader uniforms",
+    "Create src/ui/components/Slider.tsx - reusable styled slider component with label, value display, glassmorphism",
+    "Create src/ui/components/Toggle.tsx - reusable toggle switch component",
+    "Create src/ui/components/Button.tsx - reusable button with variants (primary neon, secondary, ghost)",
+    "Create src/ui/components/ColorPicker.tsx - color selection component for customization",
+    "Create src/ui/components/Tooltip.tsx - tooltip component for UI elements",
+    "Create src/ui/hooks/useEngine.ts - React hook to access the Engine instance and subscribe to state changes",
+    "Create src/ui/hooks/useAudioState.ts - React hook providing real-time audio state with RAF-synced updates",
+    "Create src/ui/hooks/useKeyboardShortcuts.ts - global keyboard shortcuts (Space: play/pause, F: fullscreen, N: next scene, P: previous scene, 1-9: preset hotkeys, H: hide UI, Esc: show UI)",
+    "Create src/renderer/App.tsx - wire everything together: initialize Engine on mount, render MainLayout, handle lifecycle",
+    "Ensure all UI uses TailwindCSS with the cyberpunk dark theme: dark backgrounds (#0a0a0f, #1a1a2e), neon accent colors (cyan #00f5ff, magenta #ff00ff, purple #8b5cf6), glassmorphism panels (backdrop-blur, semi-transparent backgrounds), glow effects on active elements"
+  ],
+  "acceptance_criteria": [
+    "PresetManager can save, load, import, and export presets",
+    "Built-in presets are loadable from JSON files",
+    "Engine orchestrates all systems in a render loop",
+    "React UI renders with dark cyberpunk theme",
+    "All UI components are properly typed and render without errors",
+    "Keyboard shortcuts are registered",
+    "Canvas3D properly manages the Three.js renderer lifecycle",
+    "PerformanceOverlay displays live stats",
+    "TypeScript compiles with no errors",
+    "Build succeeds without errors"
+  ],
+  "verification": [
+    "pnpm typecheck",
+    "pnpm build",
+    "pnpm test -- --run"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

@@ -1,0 +1,7 @@
+{
+  "task_id": "task-audio-visualizer",
+  "task_description": "Build a professional next-gen audio reactive visualizer as a commercial-grade desktop application using Electron, React, TypeScript, Three.js, WebGL2, and Web Audio API. The application features a modular architecture with separate audio analysis engine, GPU-accelerated render pipeline, 12+ visualizer modes, cinematic camera system, GPU particle engine, modular shader system, preset management, streaming/OBS support, and a futuristic cyberpunk UI.",
+  "status": "in_progress",
+  "feature_order": ["FEAT-001", "FEAT-002", "FEAT-003", "FEAT-004", "FEAT-005", "FEAT-006"],
+  "blocked_reason": null
+}

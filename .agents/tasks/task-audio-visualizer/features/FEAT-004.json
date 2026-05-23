@@ -1,0 +1,39 @@
+{
+  "id": "FEAT-004",
+  "type": "feat",
+  "description": "Implement the scene system with multiple working visualizer modes. Each scene is a self-contained Three.js scene that receives AudioState and renders audio-reactive 3D content. Include at least 8 distinct visualizer modes covering different visual styles.",
+  "status": "pending",
+  "steps": [
+    "Create src/scenes/types.ts - BaseScene interface with methods: init(renderer, audioState), update(deltaTime, audioState), resize(width, height), destroy(), getConfig(): SceneConfig. Define SceneConfig with name, description, category, thumbnail, configurable parameters",
+    "Create src/scenes/SceneManager.ts - manage scene lifecycle, handle transitions between scenes (crossfade, cut, zoom), maintain scene registry, support auto-transition on drops/buildups",
+    "Create src/scenes/registry.ts - registry of all available scenes with metadata for the UI to list them",
+    "Create src/scenes/CircularSpectrum.ts - classic circular spectrum analyzer: bars arranged in a circle, height driven by frequency, color gradient from bass (warm) to highs (cool), glow on beats, rotation speed linked to energy",
+    "Create src/scenes/TrapNationRing.ts - the iconic Trap Nation style ring visualizer: centered circle with radiating bars, reactive ring scale on bass, particle burst on beats, background gradient shift",
+    "Create src/scenes/ParticleGalaxy.ts - 50k+ particles in a spiral galaxy formation. Rotation speed linked to BPM, particle brightness to energy, arm spread to bass, color to frequency distribution. Camera slowly orbits",
+    "Create src/scenes/InfiniteTunnel.ts - camera moves through an infinite tunnel made of wireframe rings or geometric shapes. Tunnel radius pulses with bass, speed linked to energy, ring colors shift with frequency, fog density reactive",
+    "Create src/scenes/NeonWaveform.ts - 3D neon tube rendering of the audio waveform. Multiple layers at different depths, glow intensity linked to energy, color cycling with beat, camera slight movement",
+    "Create src/scenes/AudioTerrain.ts - procedural terrain mesh with vertices displaced by frequency spectrum. Camera flies over terrain. Height mapped from FFT, color from altitude (bass=deep, highs=peaks), fog and atmosphere",
+    "Create src/scenes/GeometricPulse.ts - polyhedra (icosahedron, dodecahedron) that pulse and morph with audio. Vertices displaced by frequency bands, wireframe and solid mix, rotation on beat, emission glow on energy",
+    "Create src/scenes/SpaceScene.ts - starfield background with nebula colors, central energy sphere pulsing with bass, orbiting particles, lens flares on peaks, volumetric rays on beats",
+    "Create src/scenes/CyberpunkCity.ts - simplified cityscape silhouette with neon lights reacting to audio. Building heights pulse with bass, neon signs flicker with highs, rain particles, reflective ground plane",
+    "Create src/scenes/ReactiveVortex.ts - spiraling vortex of particles pulled toward center, audio energy controls spiral tightness, beats cause expansion bursts, color gradient based on frequency",
+    "Create src/scenes/EnergyStorm.ts - lightning/energy bolts between points, frequency of bolts linked to beats, brightness to energy, branching complexity to spectral content",
+    "Create src/scenes/FluidSimulation.ts - simplified 2D fluid rendered as a fullscreen shader, velocity field driven by audio spectrum, color based on frequency bands, swirl intensity from bass",
+    "Create src/scenes/index.ts exporting all scenes and the scene registry"
+  ],
+  "acceptance_criteria": [
+    "SceneManager can load, transition, and destroy scenes",
+    "Each scene implements the BaseScene interface correctly",
+    "At least 12 distinct visualizer scenes are implemented",
+    "Scenes use actual Three.js objects (Mesh, Points, ShaderMaterial, etc.)",
+    "Scenes respond to AudioState properties in their update() methods",
+    "Scene registry provides metadata for all scenes",
+    "TypeScript compiles with no errors"
+  ],
+  "verification": [
+    "pnpm typecheck",
+    "pnpm test -- --run"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

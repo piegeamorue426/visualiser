@@ -1,0 +1,36 @@
+{
+  "id": "FEAT-002",
+  "type": "feat",
+  "description": "Implement the professional audio analysis engine with real-time FFT processing, frequency band separation, beat detection, BPM estimation, energy tracking, and globally accessible audio state.",
+  "status": "pending",
+  "steps": [
+    "Create src/audio-engine/types.ts defining AudioState interface with all required properties: bass, subBass, kick, snare, mids, highs, vocals, energy, dropDetected, spectrum (Float32Array of 256 bands), bpm, beatDetected, peakDetected, silence, transitionDetected, waveform, rms, spectralCentroid, spectralFlatness",
+    "Create src/audio-engine/AudioAnalyzer.ts - the main audio analysis class using Web Audio API AnalyserNode with FFT size 2048. Methods: initialize(stream: MediaStream), analyze(): AudioState, getFrequencyBand(low, high), destroy()",
+    "Create src/audio-engine/FrequencyBands.ts - utility to split FFT data into named frequency bands: subBass (20-60Hz), bass (60-250Hz), lowMids (250-500Hz), mids (500-2kHz), upperMids (2k-4kHz), highs (4k-8kHz), brilliance (8k-20kHz). Use proper frequency-to-bin mapping based on sample rate",
+    "Create src/audio-engine/BeatDetector.ts - onset detection using energy flux algorithm. Track energy history, detect sudden increases above adaptive threshold. Output beat timing, strength, and confidence. Include tempo estimation using autocorrelation on beat history",
+    "Create src/audio-engine/EnergyTracker.ts - track overall energy, detect drops (sudden energy decrease after high energy period), detect buildups (gradually increasing energy), detect silence (energy below threshold for N frames), detect peaks (local maxima in energy)",
+    "Create src/audio-engine/BPMEstimator.ts - estimate BPM using autocorrelation of onset function. Maintain a rolling BPM estimate with confidence. Support tempo range 60-200 BPM",
+    "Create src/audio-engine/AudioSmoother.ts - utility for temporal smoothing of audio values using exponential moving average with configurable attack/release times to prevent jitter",
+    "Create src/audio-engine/AudioManager.ts - singleton manager that handles audio context creation, device enumeration, stream acquisition (microphone or system audio via Electron desktopCapturer), and exposes the current AudioState globally",
+    "Create src/audio-engine/index.ts exporting all public APIs",
+    "Create src/audio-engine/__tests__/FrequencyBands.test.ts - unit test frequency band splitting with synthetic FFT data",
+    "Create src/audio-engine/__tests__/BeatDetector.test.ts - unit test beat detection with simulated energy patterns",
+    "Create src/audio-engine/__tests__/AudioSmoother.test.ts - unit test smoothing behavior"
+  ],
+  "acceptance_criteria": [
+    "AudioAnalyzer can be instantiated and provides typed AudioState output",
+    "FrequencyBands correctly maps frequency ranges to FFT bin indices",
+    "BeatDetector detects beats from synthetic energy data in tests",
+    "BPMEstimator provides tempo estimation from beat intervals",
+    "EnergyTracker detects drops, buildups, silence, and peaks",
+    "AudioSmoother provides configurable temporal smoothing",
+    "All unit tests pass",
+    "TypeScript compiles with no errors"
+  ],
+  "verification": [
+    "pnpm typecheck",
+    "pnpm test -- --run"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}
