@@ -322,6 +322,13 @@ export class PostProcessingStack {
   }
 
   /**
+   * Get the current post-processing configuration.
+   */
+  getConfig(): PostProcessingConfig {
+    return { ...this.config };
+  }
+
+  /**
    * Enable or disable the entire post-processing stack.
    */
   setEnabled(enabled: boolean): void {

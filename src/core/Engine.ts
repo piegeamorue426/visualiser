@@ -290,29 +290,27 @@ export class Engine {
 
     // Apply visual/post-processing settings
     if (settings.visual && this.renderPipeline) {
+      const current = this.renderPipeline.getPostProcessingConfig();
       const ppConfig: Partial<PostProcessingConfig> = {
         bloom: {
-          enabled: settings.visual.bloom ?? true,
-          intensity: settings.visual.bloomIntensity ?? 1.5,
-          threshold: 0.6,
-          radius: 0.4,
+          ...current.bloom,
+          enabled: settings.visual.bloom ?? current.bloom.enabled,
+          intensity: settings.visual.bloomIntensity ?? current.bloom.intensity,
         },
         chromaticAberration: {
-          enabled: settings.visual.chromaticAberration ?? true,
-          offset: 0.002,
+          ...current.chromaticAberration,
+          enabled: settings.visual.chromaticAberration ?? current.chromaticAberration.enabled,
         },
         vignette: {
-          enabled: settings.visual.vignette ?? true,
-          intensity: 0.8,
-          smoothness: 0.4,
+          ...current.vignette,
+          enabled: settings.visual.vignette ?? current.vignette.enabled,
         },
         filmGrain: {
-          enabled: settings.visual.filmGrain ?? false,
-          intensity: 0.05,
-          speed: 1.0,
+          ...current.filmGrain,
+          enabled: settings.visual.filmGrain ?? current.filmGrain.enabled,
         },
       };
-      const merged = { ...createDefaultPostProcessingConfig(), ...ppConfig };
+      const merged = { ...current, ...ppConfig };
       this.renderPipeline.setPostProcessingConfig(merged);
     }
 
@@ -384,7 +382,7 @@ export class Engine {
 
     // Frame throttling: skip frame if target FPS is set and interval hasn't elapsed
     const targetFps = this.getTargetFps();
-    if (targetFps > 0 && targetFps < 60) {
+    if (targetFps > 0) {
       const minFrameInterval = 1000 / targetFps;
       if (now - this.lastRenderTime < minFrameInterval) {
         this.animationFrameId = requestAnimationFrame(() => this.loop());
@@ -413,7 +411,7 @@ export class Engine {
     // 4. Update camera - apply camera system to active scene's camera
     const activeScene = this.sceneManager.getActiveScene();
     if (activeScene) {
-      this.cameraSystem.updateTarget(activeScene.getCamera() as THREE.PerspectiveCamera, deltaTime, this.audioState);
+      this.cameraSystem.updateTarget(activeScene.getCamera(), deltaTime, this.audioState);
     }
 
     // 5. Notify plugins

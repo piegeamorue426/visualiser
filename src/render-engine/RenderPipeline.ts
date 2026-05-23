@@ -82,6 +82,7 @@ export class RenderPipeline {
   resize(width: number, height: number): void {
     this.config.width = width;
     this.config.height = height;
+    this.lastAppliedScale = 1.0;
     this.renderer.setSize(width, height);
     this.postProcessing.resize(width, height);
   }
@@ -103,6 +104,13 @@ export class RenderPipeline {
   setPostProcessingConfig(config: Partial<PostProcessingConfig>): void {
     const merged = { ...createDefaultPostProcessingConfig(), ...config };
     this.postProcessing.configure(merged);
+  }
+
+  /**
+   * Get the current post-processing configuration.
+   */
+  getPostProcessingConfig(): PostProcessingConfig {
+    return this.postProcessing.getConfig();
   }
 
   /**

@@ -66,20 +66,27 @@ export class CameraSystem {
    * This allows the CameraSystem to augment the scene's own camera rather than
    * maintaining a completely separate camera.
    */
-  updateTarget(target: THREE.PerspectiveCamera, deltaTime: number, audioState?: AudioState): void {
+  updateTarget(target: THREE.Camera, deltaTime: number, audioState?: AudioState): void {
     this.time += deltaTime;
+
+    const isPerspective = target instanceof THREE.PerspectiveCamera;
 
     // Apply audio reactivity effects directly to the target camera
     if (audioState) {
       this.applyBassShake(audioState);
-      this.applyAutoZoom(audioState, deltaTime);
+      if (isPerspective) {
+        this.applyAutoZoom(audioState, deltaTime);
+      }
     }
 
-    // Apply shake offset to the target camera
-    target.position.add(this.shakeOffset);
+    // Apply shake offset only for perspective cameras; moving an ortho camera
+    // off-center breaks fullscreen quads.
+    if (isPerspective) {
+      target.position.add(this.shakeOffset);
+    }
 
-    // Apply auto-zoom FOV to target camera
-    if (this.config.autoZoom && audioState) {
+    // Apply auto-zoom FOV to target camera (only valid for PerspectiveCamera)
+    if (isPerspective && this.config.autoZoom && audioState) {
       target.fov = this.currentFov;
       target.updateProjectionMatrix();
     }
