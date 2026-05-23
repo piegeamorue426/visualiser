@@ -2,7 +2,7 @@
   "id": "FEAT-004",
   "type": "feat",
   "description": "Implement the scene system with multiple working visualizer modes. Each scene is a self-contained Three.js scene that receives AudioState and renders audio-reactive 3D content. Include at least 8 distinct visualizer modes covering different visual styles.",
-  "status": "pending",
+  "status": "in_progress",
   "steps": [
     "Create src/scenes/types.ts - BaseScene interface with methods: init(renderer, audioState), update(deltaTime, audioState), resize(width, height), destroy(), getConfig(): SceneConfig. Define SceneConfig with name, description, category, thumbnail, configurable parameters",
     "Create src/scenes/SceneManager.ts - manage scene lifecycle, handle transitions between scenes (crossfade, cut, zoom), maintain scene registry, support auto-transition on drops/buildups",
