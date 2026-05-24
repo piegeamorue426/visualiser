@@ -11,7 +11,6 @@ import { CyberpunkCity } from './CyberpunkCity';
 import { ReactiveVortex } from './ReactiveVortex';
 import { EnergyStorm } from './EnergyStorm';
 import { FluidSimulation } from './FluidSimulation';
-import { SceneManager } from './SceneManager';
 
 /**
  * Scene registry entry mapping an ID to a factory function and static metadata.
@@ -153,13 +152,4 @@ export const sceneRegistry: SceneRegistryEntry[] = [
   },
 ];
 
-/**
- * Create a SceneManager with all scenes registered.
- */
-export function createSceneManager(): SceneManager {
-  const manager = new SceneManager();
-  for (const entry of sceneRegistry) {
-    manager.registerScene(entry.id, entry.factory, entry.config);
-  }
-  return manager;
-}
+
