@@ -1,8 +1,8 @@
 import { app, BrowserWindow } from 'electron';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { registerIpcHandlers } from './ipc-handlers';
-import { createTray, destroyTray } from './tray';
+import { registerIpcHandlers } from './ipc-handlers.js';
+import { createTray, destroyTray } from './tray.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
