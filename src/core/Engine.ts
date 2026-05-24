@@ -11,7 +11,18 @@ import { RenderPipeline } from '@render/RenderPipeline';
 import type { RenderStats, PostProcessingConfig } from '@render/types';
 import { createDefaultPostProcessingConfig } from '@render/types';
 import { SceneManager } from '@scenes/SceneManager';
-import { getSceneRegistry } from '@scenes/registry';
+import { CircularSpectrum } from '@scenes/CircularSpectrum';
+import { TrapNationRing } from '@scenes/TrapNationRing';
+import { ParticleGalaxy } from '@scenes/ParticleGalaxy';
+import { InfiniteTunnel } from '@scenes/InfiniteTunnel';
+import { NeonWaveform } from '@scenes/NeonWaveform';
+import { AudioTerrain } from '@scenes/AudioTerrain';
+import { GeometricPulse } from '@scenes/GeometricPulse';
+import { SpaceScene } from '@scenes/SpaceScene';
+import { CyberpunkCity } from '@scenes/CyberpunkCity';
+import { ReactiveVortex } from '@scenes/ReactiveVortex';
+import { EnergyStorm } from '@scenes/EnergyStorm';
+import { FluidSimulation } from '@scenes/FluidSimulation';
 import { CameraSystem } from '@camera/CameraSystem';
 import { CameraMode } from '@camera/types';
 import { PresetManager } from '@presets/PresetManager';
@@ -50,9 +61,7 @@ export class Engine {
   constructor() {
     this.audioManager = AudioManager.getInstance();
     this.sceneManager = new SceneManager();
-    for (const entry of getSceneRegistry()) {
-      this.sceneManager.registerScene(entry.id, entry.factory, entry.config);
-    }
+    this.registerAllScenes();
     this.cameraSystem = new CameraSystem();
     this.presetManager = new PresetManager();
     this.pluginManager = new PluginManager();
@@ -482,6 +491,86 @@ export class Engine {
       const merged = { ...createDefaultPostProcessingConfig(), ...ppConfig };
       this.renderPipeline.setPostProcessingConfig(merged);
     }
+  }
+
+  private registerAllScenes(): void {
+    this.sceneManager.registerScene('circular-spectrum', () => new CircularSpectrum(), {
+      name: 'Circular Spectrum',
+      description: 'Bars arranged in a circle with height driven by frequency spectrum',
+      category: 'spectrum',
+      parameters: [
+        { key: 'barCount', label: 'Bar Count', type: 'number', default: 128, min: 32, max: 256, step: 8 },
+        { key: 'ringRadius', label: 'Ring Radius', type: 'number', default: 3, min: 1, max: 8, step: 0.5 },
+        { key: 'rotationSpeed', label: 'Rotation Speed', type: 'number', default: 0.2, min: 0, max: 2, step: 0.1 },
+        { key: 'glowIntensity', label: 'Glow Intensity', type: 'number', default: 1.5, min: 0, max: 5, step: 0.1 },
+      ],
+    });
+    this.sceneManager.registerScene('trap-nation-ring', () => new TrapNationRing(), {
+      name: 'Trap Nation Ring',
+      description: 'Classic trap nation style ring visualizer with reactive glow',
+      category: 'spectrum',
+      parameters: [],
+    });
+    this.sceneManager.registerScene('particle-galaxy', () => new ParticleGalaxy(), {
+      name: 'Particle Galaxy',
+      description: 'Golden-angle spiral galaxy with 60k audio-reactive particles',
+      category: 'particles',
+      parameters: [],
+    });
+    this.sceneManager.registerScene('infinite-tunnel', () => new InfiniteTunnel(), {
+      name: 'Infinite Tunnel',
+      description: 'Endless tunnel with geometry driven by audio',
+      category: 'geometric',
+      parameters: [],
+    });
+    this.sceneManager.registerScene('neon-waveform', () => new NeonWaveform(), {
+      name: 'Neon Waveform',
+      description: 'Glowing neon waveform display with audio reactivity',
+      category: 'spectrum',
+      parameters: [],
+    });
+    this.sceneManager.registerScene('audio-terrain', () => new AudioTerrain(), {
+      name: 'Audio Terrain',
+      description: 'Terrain mesh deformed by audio frequency data',
+      category: 'environment',
+      parameters: [],
+    });
+    this.sceneManager.registerScene('geometric-pulse', () => new GeometricPulse(), {
+      name: 'Geometric Pulse',
+      description: 'Pulsating geometric shapes reacting to beats',
+      category: 'geometric',
+      parameters: [],
+    });
+    this.sceneManager.registerScene('space', () => new SpaceScene(), {
+      name: 'Space',
+      description: 'Starfield and nebula with audio-reactive elements',
+      category: 'environment',
+      parameters: [],
+    });
+    this.sceneManager.registerScene('cyberpunk-city', () => new CyberpunkCity(), {
+      name: 'Cyberpunk City',
+      description: 'Neon-lit cyberpunk cityscape with audio reactivity',
+      category: 'environment',
+      parameters: [],
+    });
+    this.sceneManager.registerScene('reactive-vortex', () => new ReactiveVortex(), {
+      name: 'Reactive Vortex',
+      description: 'Swirling vortex that reacts to audio energy',
+      category: 'abstract',
+      parameters: [],
+    });
+    this.sceneManager.registerScene('energy-storm', () => new EnergyStorm(), {
+      name: 'Energy Storm',
+      description: 'Electric energy storm driven by audio intensity',
+      category: 'abstract',
+      parameters: [],
+    });
+    this.sceneManager.registerScene('fluid-simulation', () => new FluidSimulation(), {
+      name: 'Fluid Simulation',
+      description: 'Fullscreen simplex-noise fluid shader',
+      category: 'shader',
+      parameters: [],
+    });
   }
 
   private setupPluginContext(): void {
