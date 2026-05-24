@@ -39,7 +39,8 @@ export class SceneManager {
   loadScene(id: string): void {
     const factory = this.registry.get(id);
     if (!factory) {
-      throw new Error(`Scene "${id}" not found in registry`);
+      console.warn(`[SceneManager] Scene "${id}" not found. Available: ${Array.from(this.registry.keys()).join(', ')}`);
+      return;
     }
 
     const newScene = factory();

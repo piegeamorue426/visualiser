@@ -1,6 +1,6 @@
 export type { BaseScene, SceneConfig, SceneParameter } from './types';
 export { SceneManager } from './SceneManager';
-export { sceneRegistry } from './registry';
+export { getSceneRegistry } from './registry';
 export type { SceneRegistryEntry } from './registry';
 export { CircularSpectrum } from './CircularSpectrum';
 export { TrapNationRing } from './TrapNationRing';

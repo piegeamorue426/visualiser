@@ -23,8 +23,11 @@ export interface SceneRegistryEntry {
 
 /**
  * All available scenes in the application.
+ * Wrapped in a function to avoid circular import issues - scene class references
+ * are resolved when called at runtime, not at module evaluation time.
  */
-export const sceneRegistry: SceneRegistryEntry[] = [
+export function getSceneRegistry(): SceneRegistryEntry[] {
+  return [
   {
     id: 'circular-spectrum',
     factory: () => new CircularSpectrum(),
@@ -150,6 +153,7 @@ export const sceneRegistry: SceneRegistryEntry[] = [
       parameters: [],
     },
   },
-];
+  ];
+}
 
 

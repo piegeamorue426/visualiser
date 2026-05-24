@@ -11,7 +11,7 @@ import { RenderPipeline } from '@render/RenderPipeline';
 import type { RenderStats, PostProcessingConfig } from '@render/types';
 import { createDefaultPostProcessingConfig } from '@render/types';
 import { SceneManager } from '@scenes/SceneManager';
-import { sceneRegistry } from '@scenes/registry';
+import { getSceneRegistry } from '@scenes/registry';
 import { CameraSystem } from '@camera/CameraSystem';
 import { CameraMode } from '@camera/types';
 import { PresetManager } from '@presets/PresetManager';
@@ -50,7 +50,7 @@ export class Engine {
   constructor() {
     this.audioManager = AudioManager.getInstance();
     this.sceneManager = new SceneManager();
-    for (const entry of sceneRegistry) {
+    for (const entry of getSceneRegistry()) {
       this.sceneManager.registerScene(entry.id, entry.factory, entry.config);
     }
     this.cameraSystem = new CameraSystem();
